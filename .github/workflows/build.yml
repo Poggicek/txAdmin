@@ -9,15 +9,13 @@ jobs:
   check-tag-branch:
     runs-on: ubuntu-latest
     steps:
-    - name: checkout source code
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Get Branch
-      run: |
-        raw=$(git branch -r --contains ${{ github.ref }})
-        branch=${raw##*/}
-        echo "BRANCH=$branch" >> $GITHUB_ENV
+    - name: Set env.BRANCH
+      run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+
+    - name: Is main?
+      if: env.BRANCH == 'main'
+      run: echo "This is 'main' branch"
+
     - run: echo ${{ env.BRANCH }}
 
     - name: exit if commit is not in master
