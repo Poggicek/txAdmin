@@ -20,7 +20,7 @@ jobs:
         branch=${raw##*/}
         echo ${raw}
         echo "BRANCH=$raw" >> $GITHUB_ENV
-    - run: echo "TEST=`echo $(git rev-parse --abbrev-ref HEAD)`" >> $GITHUB_ENV
+    - run: echo "TEST=`echo $(git symbolic-ref --short HEAD)`" >> $GITHUB_ENV
     - run: echo ${{ env.TEST }}
 
 
