@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    if: $( github.ref | cut -d'/' -f 3 == 'shit')
+    if: ${{ github.ref == 'refs/heads/shit' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
