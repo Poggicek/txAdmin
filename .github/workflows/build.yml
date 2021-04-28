@@ -6,8 +6,22 @@ on:
       - v*
 
 jobs:
+  check-tag-branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout source code
+      uses: actions/checkout@v2
+    - name: Get Branch
+      run: |
+        raw=$(git branch -r --contains ${{ github.ref }})
+        branch=${raw/origin\/}
+        echo "BRANCH=$branch" >> $GITHUB_ENV
+    - name: exit if commit is not in master
+      if: env.BRANCH != 'shit'
+      run: exit 1
+
   build:
-    if: ${{ github.ref == 'refs/heads/master' }}
+    needs: [check-tag-branch]
     runs-on: ubuntu-latest
     strategy:
       matrix:
