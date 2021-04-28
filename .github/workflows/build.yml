@@ -2,8 +2,6 @@ name: Production build
 
 on:
   push:
-    tags:
-      - v*
 
 jobs:
   build:
