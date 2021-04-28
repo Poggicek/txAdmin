@@ -23,6 +23,16 @@ jobs:
     - run: echo "TEST=`echo $(git branch -r --contains ${{ github.sha }})`" >> $GITHUB_ENV
     - run: echo ${{ env.TEST }}
 
+
+    - name: Set environment variables
+      run: |
+        echo "GIT_SHA=${GITHUB_SHA}" >> $GITHUB_ENV
+        echo "GIT_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+    - name: Use environment variables
+      run: |
+        echo "GIT_SHA=${GIT_SHA}"
+        echo "GIT_BRANCH=${GIT_BRANCH}"
+
     - name: exit if commit is not in master
       if: env.BRANCH != 'shit'
       run: exit 1
