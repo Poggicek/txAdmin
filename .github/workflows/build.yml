@@ -17,6 +17,8 @@ jobs:
         raw=$(git branch -r --contains ${{ github.ref }})
         branch=${raw/origin\/}
         echo "BRANCH=$branch" >> $GITHUB_ENV
+    - run: echo ${{ env.BRANCH }}
+
     - name: exit if commit is not in master
       if: env.BRANCH != 'shit'
       run: exit 1
