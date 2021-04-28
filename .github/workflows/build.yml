@@ -5,16 +5,18 @@ on:
     tags:
       - v*
 
-
 jobs:
   check-tag-branch:
     runs-on: ubuntu-latest
     steps:
+    - run: echo "TEST=`echo $(git rev-parse --abbrev-ref HEAD)`" >> $GITHUB_ENV
+
+
     - name: get tag commit hash
       id: tag-commit-hash
       run: |
         hash=${{ GITHUB.SHA }}
-        echo "::set-output name=tag-hash::${hash}"
+        echo "tag-hash=${hash}" >> $GITHUB_ENV
         echo $hash
     - name: checkout master
       uses: actions/checkout@v2
@@ -24,11 +26,15 @@ jobs:
       id: master-commit-hash
       run: |
         hash=$(git log -n1 --format=format:"%H")
-        echo "::set-output name=master-hash::${hash}"
+        echo "master-hash=${hash}" >> $GITHUB_ENV
         echo $hash
+
+    - run: echo ${{env.tag-hash}}
+    - run: echo ${{env.master-hash}}
     - name: exit if tag commit hash don't match master commit hash
-      if: steps.tag-commit-hash.outputs.tag-hash != steps.master-commit-hash.outputs.master-hash
+      if: env.tag-hash != env.master-hash
       run: exit 1
+
 
   build:
     needs: [check-tag-branch]
