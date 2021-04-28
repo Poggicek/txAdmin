@@ -9,31 +9,24 @@ jobs:
   check-tag-branch:
     runs-on: ubuntu-latest
     steps:
-    - name: checkout source code
+    - name: get tag commit hash
+      id: tag-commit-hash
+      run: |
+        hash=${{ GITHUB.SHA }}
+        echo "::set-output name=tag-hash::${hash}"
+        echo $hash
+    - name: checkout master
       uses: actions/checkout@v2
       with:
-        fetch-depth: 0
-    - name: Get Branch
+        ref: shit
+    - name: get latest master commit hash
+      id: master-commit-hash
       run: |
-        raw=$(git branch -r --contains ${{ github.ref }})
-        branch=${raw##*/}
-        echo ${raw}
-        echo "BRANCH=$raw" >> $GITHUB_ENV
-    - run: echo "TEST=`echo $(git symbolic-ref --short HEAD)`" >> $GITHUB_ENV
-    - run: echo ${{ env.TEST }}
-
-
-    - name: Set environment variables
-      run: |
-        echo "GIT_SHA=${GITHUB_SHA}" >> $GITHUB_ENV
-        echo "GIT_BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-    - name: Use environment variables
-      run: |
-        echo "GIT_SHA=${GIT_SHA}"
-        echo "GIT_BRANCH=${GIT_BRANCH}"
-
-    - name: exit if commit is not in master
-      if: env.BRANCH != 'shit'
+        hash=$(git log -n1 --format=format:"%H")
+        echo "::set-output name=master-hash::${hash}"
+        echo $hash
+    - name: exit if tag commit hash don't match master commit hash
+      if: steps.tag-commit-hash.outputs.tag-hash != steps.master-commit-hash.outputs.master-hash
       run: exit 1
 
   build:
